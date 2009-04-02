@@ -44,7 +44,7 @@ module Merb
       gem_dir = Dir.pwd / "gems" / "gems"
       cache_dir = Dir.pwd / "gems" / "cache"
       
-      gems  = Dir[gem_dir / "*"].map!  {|n| File.basename(n)}
+      gems  = Dir[gem_dir / "*-[0-9]*"].map!  {|n| File.basename(n)}
       cache = Dir[cache_dir / "*.gem"].map! {|n| File.basename(n, ".gem")}
       new_gems = cache - gems
       outdated = gems - cache
@@ -73,7 +73,11 @@ module Merb
           :ignore => true,
           :executables => true
         )
-        uninstaller.uninstall
+        begin
+          uninstaller.uninstall
+        rescue
+          self.class.error "Problem uninstalling #{g}"
+        end
       end
     end
     
